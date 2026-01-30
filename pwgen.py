@@ -1,30 +1,51 @@
-import random
+import secrets
 import string
 
-letters = string.ascii_letters
-num = string.digits
-pleb = '!@^*$'
-all = letters + num + pleb
+LETTERS = string.ascii_letters
+DIGITS = string.digits
+SPECIAL = "!@#$%^&*()-_=+[]{}|;:,.<>?"
+ALL_CHARS = LETTERS + DIGITS + SPECIAL
+
+
+def generate_pin(length: int = 4) -> str:
+    return ''.join(secrets.choice(DIGITS) for _ in range(length))
+
+
+def generate_password(length: int) -> str:
+    # Ensure at least one of each type
+    password = [
+        secrets.choice(LETTERS),
+        secrets.choice(DIGITS),
+        secrets.choice(SPECIAL)
+    ]
+    # Fill the rest
+    password += [secrets.choice(ALL_CHARS) for _ in range(length - 3)]
+    # Shuffle the order
+    secrets.SystemRandom().shuffle(password)
+    return ''.join(password)
+
 
 def main():
-    print("Skriv in pin eller pw")
-    pwellerkod = input("pin eller pw? ")
-    if pwellerkod == "pin":
-        manga = int(input("Hur många pinkoder? "))
-        for p in range(manga):
-            pin = ''
-            for c in range(4):
-                pin += random.choice(num)
-            print(pin)
-    elif pwellerkod == "pw":
-        len = int(input("Lösenordslängd? "))
-        many = int(input("Hur många lösenord? "))
-        for p in range(many):
-            password = ''
-            for c in range(len):
-                password += random.choice(all)
-            print(password)
-    else: 
-        print("Gör om gör rätt!")
-        main()
-main()
+    while True:
+        choice = input("pin or pw? (q to quit): ").strip().lower()
+        
+        if choice == "q":
+            break
+        elif choice == "pin":
+            count = int(input("How many PIN codes? "))
+            for _ in range(count):
+                print(generate_pin())
+        elif choice == "pw":
+            pw_length = int(input("Password length (minimum 12): "))
+            if pw_length < 12:
+                print("Warning: Passwords under 12 characters are insecure")
+                continue
+            count = int(input("How many passwords? "))
+            for _ in range(count):
+                print(generate_password(pw_length))
+        else:
+            print("Invalid choice, try again.")
+
+
+if __name__ == "__main__":
+    main()
